@@ -1,0 +1,112 @@
+[gd_scene load_steps=11 format=3 uid="uid://bedjfalarstsn"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_3025i"]
+[ext_resource type="Texture2D" uid="uid://df2fuv7qxo7pv" path="res://assets/candy_cane/cc_0.png" id="2_e456w"]
+[ext_resource type="Texture2D" uid="uid://dvvi2dq54i6oh" path="res://assets/candy_cane/cc_1V2.png" id="3_ilegp"]
+[ext_resource type="Texture2D" uid="uid://6cxbkjp8ad4b" path="res://assets/candy_cane/cc_2.png" id="4_q54sr"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_866hv"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k5x0w"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_sclxa"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_e456w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_ilegp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_ilegp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_q54sr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_q54sr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_e456w")
+}],
+"loop": false,
+"name": &"fire",
+"speed": 10.0
+}]
+
+[sub_resource type="Animation" id="Animation_8iv16"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UI/GunSprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(504, 334)]
+}
+
+[sub_resource type="Animation" id="Animation_efbkf"]
+resource_name = "bob"
+length = 0.2
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UI/GunSprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(504, 334), Vector2(504, 350), Vector2(504, 334)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_mlcmi"]
+_data = {
+"RESET": SubResource("Animation_8iv16"),
+"bob": SubResource("Animation_efbkf")
+}
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_3025i")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("CapsuleMesh_866hv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_k5x0w")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+
+[node name="RayCast3D" type="RayCast3D" parent="Head/Camera3D"]
+target_position = Vector3(0, 0, -8)
+collision_mask = 2
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="GunSprite" type="AnimatedSprite2D" parent="UI"]
+position = Vector2(504, 334)
+scale = Vector2(0.3275, 0.457812)
+sprite_frames = SubResource("SpriteFrames_sclxa")
+animation = &"fire"
+frame = 5
+frame_progress = 1.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_mlcmi")
+}
+speed_scale = 0.25
+
+[connection signal="animation_finished" from="UI/GunSprite" to="." method="_on_gun_sprite_animation_finished"]
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

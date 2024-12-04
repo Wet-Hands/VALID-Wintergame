@@ -1,0 +1,15 @@
+Node
+Node3D
+Timer
+RayCast3D
+CollisionShape3D
+MeshInstance3D
+CharacterBody3D
+AnimatedSprite3D
+FogVolume
+GPUParticles3D
+AnimationPlayer
+AnimationTree
+AnimatedSprite2D
+CanvasLayer
+StaticBody3D

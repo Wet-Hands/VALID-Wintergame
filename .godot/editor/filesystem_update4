@@ -1,0 +1,7 @@
+res://scenes/player.tscn
+res://scenes/world.tscn
+res://scripts/player.gd
+res://scenes/enemy.tscn
+res://scripts/enemy.gd
+res://scripts/world.gd
+res://scripts/GLOBAL.gd

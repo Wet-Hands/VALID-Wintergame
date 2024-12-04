@@ -1,0 +1,100 @@
+[gd_scene load_steps=14 format=3 uid="uid://dra6rnc1g72nl"]
+
+[ext_resource type="PackedScene" uid="uid://bedjfalarstsn" path="res://scenes/player.tscn" id="1_drutv"]
+[ext_resource type="Script" path="res://scripts/world.gd" id="1_qrspm"]
+[ext_resource type="Texture2D" uid="uid://bkrwygewpxw28" path="res://assets/ground_test.png" id="2_8r63m"]
+[ext_resource type="Texture2D" uid="uid://cxvrei06ic2mr" path="res://addons/kenney_particle_pack/smoke_01.png" id="2_dl45t"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ebb7g"]
+sky_top_color = Color(0.245435, 0.322479, 0.672257, 1)
+sky_horizon_color = Color(0.333531, 0.268355, 0.84608, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+sun_curve = 0.0274516
+
+[sub_resource type="Sky" id="Sky_felwf"]
+sky_material = SubResource("ProceduralSkyMaterial_ebb7g")
+
+[sub_resource type="Environment" id="Environment_2rw6v"]
+background_mode = 2
+sky = SubResource("Sky_felwf")
+tonemap_mode = 3
+glow_enabled = true
+fog_mode = 1
+fog_aerial_perspective = 0.071
+fog_sky_affect = 0.51
+volumetric_fog_density = 0.025
+adjustment_enabled = true
+adjustment_brightness = 0.75
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_34d3j"]
+albedo_texture = ExtResource("2_8r63m")
+uv1_scale = Vector3(20, 20, 20)
+texture_filter = 1
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_rqbg1"]
+material = SubResource("StandardMaterial3D_34d3j")
+size = Vector2(1000, 1000)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h6f5d"]
+size = Vector3(100, 0.01, 100)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_5otp5"]
+emission_shape = 3
+emission_box_extents = Vector3(25, 25, 25)
+direction = Vector3(1, -1, 0)
+angular_velocity_min = 30.0
+angular_velocity_max = 50.0
+linear_accel_min = 0.999998
+linear_accel_max = 10.0
+scale_min = 0.5
+scale_max = 2.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ar77k"]
+transparency = 1
+shading_mode = 0
+albedo_texture = ExtResource("2_dl45t")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_lokl0"]
+material = SubResource("StandardMaterial3D_ar77k")
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_qrspm")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2rw6v")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+light_energy = 0.5
+shadow_enabled = true
+
+[node name="Enemies" type="Node" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("1_drutv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.83627, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("PlaneMesh_rqbg1")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("BoxShape3D_h6f5d")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+transform = Transform3D(2.93559, 0, 0, 0, 6.60333, 0, 0, 0, 3.80338, 0, 24.3132, 0)
+amount = 2000
+lifetime = 5.0
+process_material = SubResource("ParticleProcessMaterial_5otp5")
+draw_pass_1 = SubResource("QuadMesh_lokl0")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
